@@ -1,0 +1,26 @@
+[project]
+name = "axon-historian"
+version = "0.1.0"
+description = "Abstract historian client interface (PI / IP21 / PHD / OPC UA / Influx) for the Axon product suite."
+requires-python = ">=3.11"
+dependencies = [
+    "axon-core",
+    "pydantic>=2.7",
+]
+license = { text = "Apache-2.0" }
+
+[project.optional-dependencies]
+opcua = ["asyncua>=1.1"]
+pi = []      # OSIsoft PI driver is shipped by the customer (PI Web API)
+influx = ["influxdb-client>=1.43"]
+postgres = ["asyncpg>=0.29"]   # for TimescaleDB
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/axon_historian"]
+
+[tool.uv.sources]
+axon-core = { workspace = true }
