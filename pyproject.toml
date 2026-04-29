@@ -1,0 +1,39 @@
+[project]
+name = "historian_bridge"
+version = "0.1.0"
+description = "HistorianBridge — vendor-agnostic REST gateway in front of historian backends."
+requires-python = ">=3.11"
+dependencies = [
+    "axon-core",
+    "axon-historian",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.6",
+]
+
+[project.optional-dependencies]
+influx = ["influxdb-client[async]>=1.40"]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "anyio>=4.3",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+historian-bridge = "historian_bridge.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/historian_bridge"]
+
+[tool.uv.sources]
+axon-core = { workspace = true }
+axon-historian = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

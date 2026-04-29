@@ -1,0 +1,17 @@
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# node
+node_modules/
+dist/
+build/
+
+# local kb cache (raw bytes are fetched on demand)
+kb/raw/
+
+# editor
+.DS_Store
+.idea/

@@ -1,0 +1,29 @@
+{
+  "name": "@axon/core",
+  "version": "0.1.0",
+  "description": "Shared domain types for the Axon product suite (battery materials, lots, CoA, production orders, packs, stations).",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./material": "./dist/material.js",
+    "./lot": "./dist/lot.js",
+    "./coa": "./dist/coa.js",
+    "./production": "./dist/production.js",
+    "./quality": "./dist/quality.js",
+    "./pack": "./dist/pack.js",
+    "./station": "./dist/station.js",
+    "./historian": "./dist/historian.js",
+    "./persona": "./dist/persona.js"
+  },
+  "files": ["dist", "src"],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  },
+  "license": "Apache-2.0"
+}

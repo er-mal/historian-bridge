@@ -1,0 +1,13 @@
+{
+  "servers": {
+    "confkb": {
+      "type": "stdio",
+      "command": "/Users/ermal/confluence tool/.venv/bin/python",
+      "args": [
+        "-m",
+        "confkb.mcp_server"
+      ],
+      "cwd": "/Users/ermal/confluence tool"
+    }
+  }
+}

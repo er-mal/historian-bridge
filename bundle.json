@@ -1,0 +1,19 @@
+{
+  "slug": "05-historian-bridge",
+  "name": "HistorianBridge",
+  "kernel": {
+    "ts": [
+      "@axon/core"
+    ],
+    "py": [
+      "axon-core",
+      "axon-historian"
+    ]
+  },
+  "events": {
+    "emits": [
+      "tag.value.alarm"
+    ],
+    "consumes": []
+  }
+}
