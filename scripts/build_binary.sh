@@ -26,10 +26,10 @@ fi
 cd "$ROOT_DIR"
 
 echo "==> uv sync (build + influx + dev extras) in $ROOT_DIR"
-uv sync "${UV_PKG_FLAGS[@]}" --extra build --extra influx --extra dev
+uv sync ${UV_PKG_FLAGS[@]+"${UV_PKG_FLAGS[@]}"} --extra build --extra influx --extra dev
 
 echo "==> PyInstaller"
-uv run "${UV_PKG_FLAGS[@]}" --extra build --extra influx \
+uv run ${UV_PKG_FLAGS[@]+"${UV_PKG_FLAGS[@]}"} --extra build --extra influx \
     pyinstaller \
         --clean \
         --noconfirm \

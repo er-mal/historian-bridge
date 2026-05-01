@@ -119,7 +119,7 @@ jobs:
       - name: Smoke-install wheel into clean venv
         run: |
           set -euo pipefail
-          uv venv --python 3.11 /tmp/hb-smoke
+          uv venv --python 3.11 --seed /tmp/hb-smoke
           /tmp/hb-smoke/bin/python -m pip install --upgrade pip
           /tmp/hb-smoke/bin/pip install \
               dist/historian_bridge-*.whl \
