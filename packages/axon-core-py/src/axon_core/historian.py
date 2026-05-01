@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Literal, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 Quality = Literal["good", "bad", "questionable", "uncertain"]
 
@@ -20,8 +20,13 @@ class HistorianPoint(BaseModel):
 
 
 class TagQuery(BaseModel):
+    """Wire/Python TagQuery. Wire field is `from`; Python attribute is `from_`.
+
+    Both `TagQuery(from_=...)` and `TagQuery.model_validate({"from": ...})` work.
+    """
+
     tags: list[str]
-    from_: str
+    from_: str = Field(alias="from")
     to: str
     agg: Optional[Literal["raw", "avg", "min", "max", "stddev", "count", "first", "last"]] = "raw"
     interval: Optional[str] = None
