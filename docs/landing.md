@@ -34,5 +34,5 @@ OPC UA, writes, web UI, and multi-tenant cloud are explicit non-goals.
 
 Built by an engineer who shipped one too many SAP-MII migrations.
 
-→ GitHub: github.com/er-mal/axon-suite (apps/05-historian-bridge)
+→ GitHub: github.com/er-mal/historian-bridge
 → Validation plan: `docs/validation.md` in the repo
