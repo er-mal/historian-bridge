@@ -79,9 +79,9 @@ re-write that script every time the historian changes.
 
 HistorianBridge gives you `/query` returning typed `HistorianPoint`
 records (`tag`, `ts`, `value`, `quality`). One shape. One CLI. One
-binary. Same call works against InMemory and InfluxDB today; PI Web API
-arrives the moment a real PI user files an issue (see
-[LICENSE-NOTES.md](LICENSE-NOTES.md)).
+binary. Same call works against InMemory and InfluxDB today. PI Web API
+is gated on AVEVA EULA review **and** confirmed user demand — see
+[NOTICE.md](NOTICE.md).
 
 ### If you're a controls engineer or SI
 
@@ -98,25 +98,11 @@ minutes instead of 30 days.
 
 ### If you're a CTO / VP Data / Head of Operations
 
-The actual problem: every plant data project re-writes the same vendor
-glue and that work disappears the next time the historian changes. That
-glue is a tax on every analytics initiative — Grafana dashboards, OEE
-calculations, predictive maintenance pilots, ESG reporting.
-HistorianBridge removes that tax by being the **stable contract**
-between the historian and everything downstream.
+- **Vendor independence** without rewriting consumers.
+- **One audit surface** for OT/IT instead of N historian credentials.
+- **Apache-2.0**, no SaaS, no phone-home, no per-tag pricing.
 
-- **Vendor independence.** Migrate from PI to Influx (or back) without
-  rewriting consumers.
-- **Audit-friendly.** Read-only by design. Single binary, single port,
-  loopback default. OT and IT can both sign off.
-- **Open source, Apache-2.0.** Fork it, embed it, vendor it. No SaaS.
-  No phone-home.
-- **Honest scope.** v1 is read-only with two backends. We ship what we
-  ship; non-goals are written down (see
-  [docs/validation.md](docs/validation.md) §5).
-
-The pitch is not "rip out your historian." The pitch is "stop letting
-your vendor own the API surface that your analytics team depends on."
+Longer version: [docs/why.md](docs/why.md).
 
 ---
 
@@ -136,8 +122,8 @@ your vendor own the API surface that your analytics team depends on."
 
 - No `/write` route, no write env flag.
 - No OPC UA driver (stub only — reactivate when a user asks).
-- No PI Web API driver (gated on AVEVA EULA review; see
-  [LICENSE-NOTES.md](LICENSE-NOTES.md)).
+- No PI Web API driver (gated on AVEVA EULA review **and** confirmed
+  user demand; see [NOTICE.md](NOTICE.md)).
 - No multi-tenant cloud, no web UI, no Kafka/CDC.
 - No inbound network ports beyond loopback.
 
@@ -219,7 +205,7 @@ the most useful thing you can do.
 ## Project hygiene
 
 - **License:** Apache-2.0. See [LICENSE](LICENSE).
-- **Third-party / vendor licenses:** [LICENSE-NOTES.md](LICENSE-NOTES.md).
+- **Third-party / vendor licenses:** [NOTICE.md](NOTICE.md).
 - **Validation plan:** [docs/validation.md](docs/validation.md).
 - **CI:** GitHub Actions, matrix `{ubuntu, macos} × {py3.11, py3.12}`,
   binary build, wheel smoke install. See `.github/workflows/ci.yml`.
