@@ -3,8 +3,5 @@
   "files.exclude": {
     "**/.venv": true,
     "**/node_modules": true
-  },
-  "search.exclude": {
-    "kb/sources.jsonl": false
   }
 }

@@ -33,7 +33,7 @@ That's it. No login. No cloud. Local binary (~50 MB; see §10).
 
 Reach order:
 
-1. **2 from your network** (former Northvolt colleagues, Nordic battery & process manufacturers). Free, fast feedback, do not count toward validation.
+1. **2 from your network** (former colleagues, Nordic manufacturing contacts). Free, fast feedback, do not count toward validation.
 2. **3 from PI System Users Group** (LinkedIn community, regional events). Cold DM engineers who post about "PI to cloud" pain. Offer to co-debug their setup live.
 3. **3 from r/PLC, r/dataengineering, Hacker News Show HN.** OSS-led pull. The repo *is* the pitch.
 4. **2 from one targeted integrator** (e.g., Atlas Copco MES partners, Cognite ecosystem) who'll run it in their next migration project.
