@@ -52,6 +52,9 @@ jobs:
       - name: pnpm install
         run: pnpm install --frozen-lockfile
 
+      - name: Build kernel TS package
+        run: pnpm --filter @axon/core build
+
       - name: TypeScript build + tests
         run: |
           pnpm exec tsc --noEmit
