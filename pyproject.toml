@@ -35,6 +35,9 @@ packages = ["src/historian_bridge"]
 axon-core = { workspace = true }
 axon-historian = { workspace = true }
 
+[tool.uv.workspace]
+members = ["packages/axon-core-py", "packages/axon-historian"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
