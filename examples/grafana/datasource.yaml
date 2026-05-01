@@ -5,7 +5,9 @@ datasources:
     type: yesoreyeram-infinity-datasource
     uid: historian-bridge
     access: proxy
-    url: http://gateway:8080
+    # Default deploy is the local binary; Grafana on the same host hits 127.0.0.1.
+    # Inside the demoted docker-compose stack, swap to http://gateway:8080.
+    url: http://127.0.0.1:8080
     isDefault: true
     jsonData:
       auth_method: none

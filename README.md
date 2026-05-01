@@ -1,32 +1,60 @@
 # HistorianBridge
 
-> TrendMiner-grade analytics gateway, no TrendMiner license.
+> Vendor-agnostic gateway in front of any historian backend. One typed API,
+> swappable drivers, no TrendMiner license. Read-only v1.
 
 ## Status
-Scaffolded auto. Clean-room build authorized by IP-board.
 
-## What this folder is
-A standalone product workspace. Open it in its own VS Code window.
-It talks to the shared 48 GB Confluence knowledge base via three idioms:
+Clean-room build. Sequencing: this is **app #1** in the Axon Suite portfolio.
+Validation plan: [docs/validation.md](docs/validation.md). Master plan:
+[../../docs/validation-plans-2026.md](../../docs/validation-plans-2026.md).
 
-1. **Offline slice** — `kb/sources.jsonl` (most relevant pages, full body).
-   See [kb/INDEX.md](kb/INDEX.md).
-2. **Live MCP** — Copilot Chat in this window has the `confkb` MCP server
-   configured (`.vscode/mcp.json`). Try:
-   > `@workspace use confluence_search to find references to ...`
-3. **Raw bytes on demand** — call `confluence_extract_attachment`
-   through MCP, or hit `http://127.0.0.1:8765` if the hub web app is up.
+## v1 surface (locked)
 
-## Mining queries
-See [kb/QUERIES.md](kb/QUERIES.md). Re-run the slicer from the hub:
+- **CLI:** `historianbridge {serve,tags,query,tail}` — the wedge demo.
+- **HTTP:** `/healthz`, `/tags`, `/current`, `/query`. Loopback by default.
+- **Backends:** `memory` (built-in) and `influx` (extra: `pip install .[influx]`).
+- **Read-only.** No `/write` route. No write env flags.
+- **Auth:** local config / env. No SSO, no Vault.
+- **Deploy:** Python wheel + `historianbridge` script. Docker is demoted
+  to [examples/docker/](examples/docker/) for CI / buyers who insist.
+
+PI Web API support is **not in v1** — gated on AVEVA EULA review (see
+`docs/validation.md` §11). OPC UA, writes, multi-tenant cloud, web UI,
+Kafka/CDC, and inbound network ports are explicit non-goals (§5).
+
+## Wedge demo
+
+```bash
+# 1. List demo tags from the in-memory backend
+historianbridge --seed-demo tags --prefix site.line1
+
+# 2. One-shot query, JSON to stdout
+historianbridge --seed-demo query \
+    "tag:site.line1.station_a.temperature last 1h"
+
+# 3. Same shape against Influx
+HISTORIAN_BRIDGE_BACKEND=influx INFLUX_URL=... INFLUX_TOKEN=... \
+INFLUX_ORG=axon INFLUX_BUCKET=historian \
+    historianbridge query "tag:T-101.temp last 1h"
+
+# 4. Live tail
+historianbridge --seed-demo tail --tag site.line1.station_a.temperature
+
+# 5. Local HTTP gateway for Grafana (binds 127.0.0.1:8080)
+historianbridge serve
 ```
-cd "/Users/ermal/confluence tool"
-.venv/bin/python -m scripts.scaffold_products --only 05-historian-bridge
-```
 
-## Build / run
-See `ARCH.md` for the target architecture.
+## Knowledge base
+
+The shared 48 GB Confluence corpus is read-only context, not a code source.
+Three idioms:
+
+1. **Offline slice** — `kb/sources.jsonl`. See [kb/INDEX.md](kb/INDEX.md).
+2. **Live MCP** — the `confkb` server is registered in `.vscode/mcp.json`.
+3. **Raw bytes on demand** — `confluence_extract_attachment` via MCP.
 
 ## License & IP hygiene
-See `LICENSE` and `CLEANROOM.md`. Patterns are referenced; verbatim
-Confluence content is not redistributed.
+
+See `LICENSE` and `CLEANROOM.md`. Patterns are referenced; verbatim Confluence
+content is never redistributed.

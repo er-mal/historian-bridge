@@ -22,5 +22,5 @@ def seeded_client() -> InMemoryHistorian:
 
 @pytest.fixture
 def app(seeded_client: InMemoryHistorian):
-    cfg = GatewayConfig(write_enabled=True)
+    cfg = GatewayConfig()
     return build_app(client=seeded_client, cfg=cfg)

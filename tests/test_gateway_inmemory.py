@@ -94,7 +94,8 @@ async def test_query_validation(app):
         assert r.json()["title"] == "bad_request"
 
 
-async def test_write_roundtrip(app):
+async def test_write_route_absent(app):
+    """v1 is read-only — the /write route must not exist (validation §5)."""
     async with await _client(app) as c:
         r = await c.post(
             "/write",
@@ -106,7 +107,4 @@ async def test_write_roundtrip(app):
                 }
             ],
         )
-        assert r.status_code == 200
-        assert r.json() == {"ok": True, "n": 1}
-        r2 = await c.get("/current", params=[("tag", "site.line2.station_c.temp")])
-        assert r2.json()[0]["value"] == 21.5
+        assert r.status_code in (404, 405)
