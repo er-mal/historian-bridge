@@ -7,4 +7,3 @@ dist
 .vitest_cache
 .git
 .vscode
-kb/sources.jsonl
