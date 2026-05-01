@@ -43,10 +43,6 @@ export class HistorianBridgeClient {
         return this.request<HistorianPoint[]>("POST", "/query", q);
     }
 
-    async write(points: HistorianPoint[]): Promise<{ ok: boolean; n: number }> {
-        return this.request<{ ok: boolean; n: number }>("POST", "/write", points);
-    }
-
     private async request<T>(method: string, path: string, body?: unknown): Promise<T> {
         const ctrl = new AbortController();
         const timer = setTimeout(() => ctrl.abort(), this.timeoutMs);

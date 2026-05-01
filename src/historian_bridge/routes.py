@@ -1,43 +1,26 @@
-"""HTTP routes for the HistorianBridge gateway."""
+"""HTTP routes for the HistorianBridge gateway.
+
+v1 is read-only (see docs/validation.md §5). The kernel `TagQuery` is the
+wire body for /query — it already accepts both `from` and `from_`. No
+app-local body type overlaps a kernel type.
+"""
 from __future__ import annotations
 
 from typing import Any, Optional
 
 from axon_core import HistorianPoint, HistorianTag, TagQuery
 from axon_historian import HistorianClient
-from fastapi import APIRouter, HTTPException, Query, Request
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Query, Request
 
 from .aggregate import aggregate, parse_interval
 from .errors import BadRequest, GatewayError
 
 
-class TagQueryBody(BaseModel):
-    """Wire-format TagQuery. Accepts both `from` and `from_`."""
-
-    tags: list[str]
-    from_: str = Field(alias="from")
-    to: str
-    agg: Optional[str] = "raw"
-    interval: Optional[str] = None
-
-    model_config = {"populate_by_name": True}
-
-    def to_kernel(self) -> TagQuery:
-        return TagQuery(
-            tags=self.tags,
-            from_=self.from_,
-            to=self.to,
-            agg=self.agg,  # type: ignore[arg-type]
-            interval=self.interval,
-        )
-
-
-def _validate_query(body: TagQueryBody) -> None:
-    if not body.tags:
+def _validate_query(q: TagQuery) -> None:
+    if not q.tags:
         raise BadRequest("tags must be non-empty")
-    if body.interval is not None:
-        parse_interval(body.interval)  # raises ValueError → caught upstream
+    if q.interval is not None:
+        parse_interval(q.interval)  # raises ValueError → caught upstream
 
 
 async def _collect(client: HistorianClient, q: TagQuery) -> list[HistorianPoint]:
@@ -47,7 +30,7 @@ async def _collect(client: HistorianClient, q: TagQuery) -> list[HistorianPoint]
     return out
 
 
-def build_router(client: HistorianClient, write_enabled: bool) -> APIRouter:
+def build_router(client: HistorianClient) -> APIRouter:
     router = APIRouter()
 
     @router.get("/healthz")
@@ -67,25 +50,16 @@ def build_router(client: HistorianClient, write_enabled: bool) -> APIRouter:
         return await client.get_current(tag)
 
     @router.post("/query", response_model=list[HistorianPoint])
-    async def query(body: TagQueryBody) -> list[HistorianPoint]:
+    async def query(body: TagQuery) -> list[HistorianPoint]:
         try:
             _validate_query(body)
         except ValueError as e:
             raise BadRequest(str(e))
-        kernel_q = body.to_kernel()
-        raw = await _collect(client, kernel_q)
+        raw = await _collect(client, body)
         agg = body.agg or "raw"
         if agg == "raw":
             return raw
         return aggregate(raw, agg=agg, interval=body.interval)
-
-    if write_enabled:
-        @router.post("/write")
-        async def write(points: list[HistorianPoint]) -> dict[str, Any]:
-            if not points:
-                raise BadRequest("points must be non-empty")
-            await client.write(points)
-            return {"ok": True, "n": len(points)}
 
     return router
 

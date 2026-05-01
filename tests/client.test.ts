@@ -66,16 +66,4 @@ describe("HistorianBridgeClient", () => {
             client.query({ tags: [], from: "x", to: "y" }),
         ).rejects.toBeInstanceOf(HistorianBridgeError);
     });
-
-    it("write returns ok envelope", async () => {
-        const fetchMock = mockFetch(() =>
-            new Response(JSON.stringify({ ok: true, n: 2 }), { status: 200 }),
-        );
-        const client = new HistorianBridgeClient({ baseUrl, fetch: fetchMock });
-        const out = await client.write([
-            { tag: "a", ts: "2026-01-01T00:00:00+00:00", value: 1 },
-            { tag: "a", ts: "2026-01-01T00:00:30+00:00", value: 2 },
-        ]);
-        expect(out).toEqual({ ok: true, n: 2 });
-    });
 });

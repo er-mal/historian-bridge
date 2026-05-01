@@ -30,6 +30,11 @@ def test_cors_csv():
     assert cfg.cors_allow_origins == ["https://a.example", "https://b.example"]
 
 
-def test_write_truthy():
-    assert load_from_env(env={"HISTORIAN_BRIDGE_WRITE": "true"}).write_enabled is True
-    assert load_from_env(env={"HISTORIAN_BRIDGE_WRITE": "0"}).write_enabled is False
+def test_cors_default_is_grafana_loopback():
+    cfg = load_from_env(env={})
+    assert cfg.cors_allow_origins == ["http://localhost:3000"]
+
+
+def test_default_host_is_loopback():
+    cfg = load_from_env(env={})
+    assert cfg.host == "127.0.0.1"

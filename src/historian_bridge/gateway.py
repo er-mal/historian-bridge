@@ -40,7 +40,7 @@ def build_app(client: Optional[HistorianClient] = None, cfg: Optional[GatewayCon
         allow_headers=["*"],
     )
     install_error_handlers(app)
-    app.include_router(build_router(client, write_enabled=cfg.write_enabled))
+    app.include_router(build_router(client))
     app.state.client = client
     app.state.config = cfg
     return app
