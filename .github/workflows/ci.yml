@@ -12,6 +12,12 @@ on:
 permissions:
   contents: read
 
+# Opt into Node.js 24 runner ahead of the June 2026 default switch so the
+# deprecation warning on actions/checkout@v4 etc. is silenced. Remove once
+# Node 24 is the default.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   test:
     name: tests (${{ matrix.os }} / py${{ matrix.python }})
