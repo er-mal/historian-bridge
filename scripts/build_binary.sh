@@ -11,15 +11,25 @@
 set -euo pipefail
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ROOT_DIR="$(cd "$APP_DIR/../.." && pwd)"
+
+# Auto-detect layout: monorepo (kernel at ../../packages/*) vs split repo
+# (kernel at ./packages/*). In the split repo APP_DIR is also the repo
+# root, so uv runs without --package flags.
+if [[ -d "$APP_DIR/../../packages/axon-core-py" ]]; then
+    ROOT_DIR="$(cd "$APP_DIR/../.." && pwd)"
+    UV_PKG_FLAGS=(--package historian_bridge)
+else
+    ROOT_DIR="$APP_DIR"
+    UV_PKG_FLAGS=()
+fi
 
 cd "$ROOT_DIR"
 
-echo "==> uv sync (build + influx + dev extras)"
-uv sync --package historian_bridge --extra build --extra influx --extra dev
+echo "==> uv sync (build + influx + dev extras) in $ROOT_DIR"
+uv sync "${UV_PKG_FLAGS[@]}" --extra build --extra influx --extra dev
 
 echo "==> PyInstaller"
-uv run --package historian_bridge --extra build --extra influx \
+uv run "${UV_PKG_FLAGS[@]}" --extra build --extra influx \
     pyinstaller \
         --clean \
         --noconfirm \
