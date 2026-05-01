@@ -38,3 +38,6 @@ axon-historian = { workspace = true }
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+markers = [
+    "slow: integration tests that need Docker / external services (deselect with -m 'not slow')",
+]

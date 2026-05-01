@@ -1,0 +1,134 @@
+name: ci
+
+# CI for the split historian-bridge repo. Builds tests, mac+linux binary,
+# and wheel. Mirrors what shipped in the axon-suite monorepo before the
+# split, with paths rewritten to be repo-relative.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: tests (${{ matrix.os }} / py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python ${{ matrix.python }}
+        run: uv python install ${{ matrix.python }}
+
+      - name: Sync workspace
+        run: uv sync --extra dev --extra influx
+
+      - name: Pytest
+        run: uv run pytest tests -q
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: pnpm install
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript build + tests
+        run: |
+          pnpm exec tsc --noEmit
+          pnpm exec vitest run
+
+  binary:
+    name: binary (${{ matrix.os }})
+    needs: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python 3.11
+        run: uv python install 3.11
+
+      - name: Sync workspace (build extras)
+        run: uv sync --extra build --extra influx --extra dev
+
+      - name: Build binary
+        run: bash scripts/build_binary.sh
+
+      - name: Report size
+        run: |
+          ls -lh dist/historianbridge*
+          wc -c < dist/historianbridge
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: historianbridge-${{ matrix.os }}
+          path: dist/historianbridge*
+          if-no-files-found: error
+          retention-days: 14
+
+  wheel:
+    name: wheel
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python 3.11
+        run: uv python install 3.11
+
+      - name: Build sdist + wheel
+        run: uv build
+
+      - name: Smoke-install wheel into clean venv
+        run: |
+          set -euo pipefail
+          uv venv --python 3.11 /tmp/hb-smoke
+          /tmp/hb-smoke/bin/python -m pip install --upgrade pip
+          /tmp/hb-smoke/bin/pip install \
+              dist/historian_bridge-*.whl \
+              packages/axon-core-py \
+              packages/axon-historian
+          /tmp/hb-smoke/bin/historianbridge --seed-demo tags --prefix site.line1 \
+              | grep -q "site.line1.station_a.temperature"
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: historian_bridge-wheel
+          path: dist/historian_bridge-*.whl
+          if-no-files-found: error
+          retention-days: 14
